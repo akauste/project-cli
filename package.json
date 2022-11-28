@@ -4,7 +4,8 @@
   "description": "Manage js project from commandline",
   "main": "index.js",
   "scripts": {
-    "test": "node --test"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+
   },
   "author": "Aku Kauste",
   "license": "ISC",
@@ -12,5 +13,8 @@
     "chalk": "^5.1.2",
     "commander": "^9.4.1"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "jest": "^29.3.1"
+  }
 }
