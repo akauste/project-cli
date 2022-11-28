@@ -1,5 +1,6 @@
-import {describe, expect, test} from '@jest/globals';
-import {splitPath} from './create.js';
+import {jest, describe, expect, test} from '@jest/globals';
+import mock from 'mock-fs';
+import {splitPath, getMatchingFiles} from './create.js';
 
 describe('create', () => {
   describe('splitPath(path)', () => {
@@ -20,5 +21,33 @@ describe('create', () => {
       expect(path).toBe('./some/other');
       expect(baseName).toBe('Component');
     });
+  });
+
+  describe('getMatchingFiles(dir, baseName)', () => {
+
+    beforeEach(() => {
+      mock({
+        './src/template-component': {
+          'ExampleComponent.js': '<ExampleComponent />',
+          'ExampleComponent.test.js': 'describe("<ExampleComponent />", () => {})',
+          'OtherFile': '// This is another file that should be ignored',
+          'ignored.txt': 'Ignores this as well',
+        }
+      });
+    });
+
+    test('./src/template-component/ExampleComponent', async () => {
+      const files = await getMatchingFiles('./src/template-component', 'ExampleComponent');
+      expect(files[0]).toBe('ExampleComponent.js');
+      expect(files.length).toBe(2);
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
+  });
+
+  describe('createMissingPath(dir)', () => {
+
   });
 });
