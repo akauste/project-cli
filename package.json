@@ -1,0 +1,11 @@
+{
+  "name": "project-cli",
+  "version": "1.0.0",
+  "description": "Manage js project from commandline",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "author": "Aku Kauste",
+  "license": "ISC"
+}
