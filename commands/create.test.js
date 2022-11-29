@@ -16,6 +16,9 @@ describe('create', () => {
         'Existing.js': '<Existing />',
         'Existing.test.js': 'describe("<Existing />", () => {})',
       },
+      './src/half-existing-component': {
+        'HalfExisting.js': '// Do not touch',
+      },
       './srv/existing-empty': {}
     });
   });
@@ -76,6 +79,18 @@ describe('create', () => {
       expect(widgetData.toString()).toBe('export default function Widget() { return <p>Widget</p> }');
       const widgetTestData = await readFile('./src/new-component/Widget.test.js');
       expect(widgetTestData.toString()).toBe('describe("<Widget />", () => {})');
+    });
+
+    test('create ./src/template-component/ExampleComponent ./src/half-existing-component/HalfExisting', async () => {
+      await create('./src/template-component/ExampleComponent', './src/half-existing-component/HalfExisting');
+      expect(access('./src/half-existing-component')).resolves.not.toThrow();
+      expect(access('./src/half-existing-component/HalfExisting.js')).resolves.not.toThrow();
+      expect(access('./src/half-existing-component/HalfExisting.test.js')).resolves.not.toThrow();
+      expect(access('./src/half-existing-component/OtherFile')).rejects.toThrow();
+      const widgetData = await readFile('./src/half-existing-component/HalfExisting.js');
+      expect(widgetData.toString()).toBe('// Do not touch'); // Should be the old data
+      const widgetTestData = await readFile('./src/half-existing-component/HalfExisting.test.js');
+      expect(widgetTestData.toString()).toBe('describe("<HalfExisting />", () => {})');
     });
   });
 });

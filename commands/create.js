@@ -1,6 +1,7 @@
-//import chalk from 'chalk';
+import chalk from 'chalk';
 import path from 'path';
 import {access, readdir, readFile, mkdir, writeFile} from 'fs/promises';
+import console from 'console';
 
 export default async function create(src, tgt) {
   const [srcPath, oldBaseName] = splitPath(src);
@@ -13,14 +14,12 @@ export default async function create(src, tgt) {
     const newPath = path.join(tgtPath, newFileName);
     try {
       await access(newPath);
+      console.warn(chalk.red.bold('[Skip existing file] ', newPath));
     } catch(err) {
-  //     try {
-        const data = await readFile(path.join(srcPath, file));
-        const newData = data.toString().replaceAll(oldBaseName, newBaseName);
-        await writeFile(newPath, newData);
-  //     } catch(err) {
-  //       console.log('Failed to create file '+ newPath, err);
-  //     }
+      const data = await readFile(path.join(srcPath, file));
+      const newData = data.toString().replaceAll(oldBaseName, newBaseName);
+      await writeFile(newPath, newData);
+      console.log(chalk.green('[Create] ', newPath));
     }
   }
 }
