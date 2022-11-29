@@ -69,11 +69,13 @@ describe('create', () => {
     test('./src/new-component is missing & gets created', async () => {
       const newPath = './src/new-component';
       await createMissingPath(newPath);
-      // await mkdir(newPath, {recursive: true});
-      //expect.assertions(1);
       await expect(access(newPath)).resolves.not.toThrow();
-      //await expect(access(newPath)).resolves.toBeTruthy();
-      //await expect(access(newPath)).rejects.toBeFalsy();
+    });
+    
+    test('./src/existing-component', async () => {
+      const newPath = './src/existing-component';
+      await createMissingPath(newPath);
+      await expect(access(newPath)).resolves.not.toThrow();
     });
   });
 });
