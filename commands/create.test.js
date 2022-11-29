@@ -4,6 +4,25 @@ import create, {splitPath, getMatchingFiles, createMissingPath} from './create.j
 import {access, mkdir, readFile} from 'fs/promises';
 
 describe('create', () => {
+  beforeEach(() => {
+    mock({
+      './src/template-component': {
+        'ExampleComponent.js': 'export default function ExampleComponent() { return <p>ExampleComponent</p> }',
+        'ExampleComponent.test.js': 'describe("<ExampleComponent />", () => {})',
+        'OtherFile': '// This is another file that should be ignored',
+        'ignored.txt': 'Ignores this as well',
+      },
+      './src/existing-component': {
+        'Existing.js': '<Existing />',
+        'Existing.test.js': 'describe("<Existing />", () => {})',
+      },
+      './srv/existing-empty': {}
+    });
+  });
+  afterEach(() => {
+    mock.restore();
+  });
+
   describe('splitPath(path)', () => {
     test('./some/simple/Path', () => {
       const [path, baseName] = splitPath('./some/simple/Path');
@@ -25,47 +44,14 @@ describe('create', () => {
   });
 
   describe('getMatchingFiles(dir, baseName)', () => {
-
-    beforeEach(() => {
-      mock({
-        './src/template-component': {
-          'ExampleComponent.js': '<ExampleComponent />',
-          'ExampleComponent.test.js': 'describe("<ExampleComponent />", () => {})',
-          'OtherFile': '// This is another file that should be ignored',
-          'ignored.txt': 'Ignores this as well',
-        }
-      });
-    });
-
     test('./src/template-component/ExampleComponent', async () => {
       const files = await getMatchingFiles('./src/template-component', 'ExampleComponent');
       expect(files[0]).toBe('ExampleComponent.js');
       expect(files.length).toBe(2);
     });
-
-    afterEach(() => {
-      mock.restore();
-    });
   });
 
   describe('createMissingPath(dir)', () => {
-    beforeEach(() => {
-      mock({
-        './src/template-component': {
-          'ExampleComponent.js': 'export default function ExampleComponent() { return <p>ExampleComponent</p> }',
-          'ExampleComponent.test.js': 'describe("<ExampleComponent />", () => {})',
-        },
-        './src/existing-component': {
-          'Existing.js': '<Existing />',
-          'Existing.test.js': 'describe("<Existing />", () => {})',
-        },
-        './srv/existing-empty': {}
-      });
-    });
-    afterEach(() => {
-      mock.restore();
-    });
-
     test('./src/new-component is missing & gets created', async () => {
       const newPath = './src/new-component';
       await createMissingPath(newPath);
@@ -77,7 +63,9 @@ describe('create', () => {
       await createMissingPath(newPath);
       await expect(access(newPath)).resolves.not.toThrow();
     });
+  });
 
+  describe('create(src, tgt)', () => {
     test('create ./src/template-component/ExampleComponent ./src/new-component/Widget', async () => {
       await create('./src/template-component/ExampleComponent', './src/new-component/Widget');
       expect(access('./src/new-component')).resolves.not.toThrow();
