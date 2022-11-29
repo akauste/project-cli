@@ -16,5 +16,8 @@
   "devDependencies": {
     "jest": "^29.3.1",
     "mock-fs": "^5.2.0"
+  },
+  "bin": {
+    "project": "index.js"
   }
 }
