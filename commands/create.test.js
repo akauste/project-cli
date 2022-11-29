@@ -1,7 +1,7 @@
 import {jest, describe, expect, test} from '@jest/globals';
 import mock from 'mock-fs';
-import {splitPath, getMatchingFiles, createMissingPath} from './create.js';
-import {access, mkdir} from 'fs/promises';
+import create, {splitPath, getMatchingFiles, createMissingPath} from './create.js';
+import {access, mkdir, readFile} from 'fs/promises';
 
 describe('create', () => {
   describe('splitPath(path)', () => {
@@ -52,7 +52,7 @@ describe('create', () => {
     beforeEach(() => {
       mock({
         './src/template-component': {
-          'ExampleComponent.js': '<ExampleComponent />',
+          'ExampleComponent.js': 'export default function ExampleComponent() { return <p>ExampleComponent</p> }',
           'ExampleComponent.test.js': 'describe("<ExampleComponent />", () => {})',
         },
         './src/existing-component': {
@@ -71,11 +71,23 @@ describe('create', () => {
       await createMissingPath(newPath);
       await expect(access(newPath)).resolves.not.toThrow();
     });
-    
+
     test('./src/existing-component', async () => {
       const newPath = './src/existing-component';
       await createMissingPath(newPath);
       await expect(access(newPath)).resolves.not.toThrow();
+    });
+
+    test('create ./src/template-component/ExampleComponent ./src/new-component/Widget', async () => {
+      await create('./src/template-component/ExampleComponent', './src/new-component/Widget');
+      expect(access('./src/new-component')).resolves.not.toThrow();
+      expect(access('./src/new-component/Widget.js')).resolves.not.toThrow();
+      expect(access('./src/new-component/Widget.test.js')).resolves.not.toThrow();
+      expect(access('./src/new-component/OtherFile')).rejects.toThrow();
+      const widgetData = await readFile('./src/new-component/Widget.js');
+      expect(widgetData.toString()).toBe('export default function Widget() { return <p>Widget</p> }');
+      const widgetTestData = await readFile('./src/new-component/Widget.test.js');
+      expect(widgetTestData.toString()).toBe('describe("<Widget />", () => {})');
     });
   });
 });

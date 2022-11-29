@@ -1,8 +1,28 @@
 //import chalk from 'chalk';
-import {access, readdir, mkdir} from 'fs/promises';
+import path from 'path';
+import {access, readdir, readFile, mkdir, writeFile} from 'fs/promises';
 
-export default function create(src, tgt) {
+export default async function create(src, tgt) {
+  const [srcPath, oldBaseName] = splitPath(src);
+  const [tgtPath, newBaseName] = splitPath(tgt);
 
+  const files = await getMatchingFiles(srcPath, oldBaseName);
+  await createMissingPath(tgtPath);
+  for(const file of files) {
+    const newFileName = file.toString().replace(oldBaseName, newBaseName);
+    const newPath = path.join(tgtPath, newFileName);
+    try {
+      await access(newPath);
+    } catch(err) {
+  //     try {
+        const data = await readFile(path.join(srcPath, file));
+        const newData = data.toString().replaceAll(oldBaseName, newBaseName);
+        await writeFile(newPath, newData);
+  //     } catch(err) {
+  //       console.log('Failed to create file '+ newPath, err);
+  //     }
+    }
+  }
 }
 
 export function splitPath(fullPath) {
