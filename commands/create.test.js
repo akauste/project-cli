@@ -1,6 +1,7 @@
 import {jest, describe, expect, test} from '@jest/globals';
 import mock from 'mock-fs';
-import {splitPath, getMatchingFiles} from './create.js';
+import {splitPath, getMatchingFiles, createMissingPath} from './create.js';
+import {access, mkdir} from 'fs/promises';
 
 describe('create', () => {
   describe('splitPath(path)', () => {
@@ -48,6 +49,31 @@ describe('create', () => {
   });
 
   describe('createMissingPath(dir)', () => {
+    beforeEach(() => {
+      mock({
+        './src/template-component': {
+          'ExampleComponent.js': '<ExampleComponent />',
+          'ExampleComponent.test.js': 'describe("<ExampleComponent />", () => {})',
+        },
+        './src/existing-component': {
+          'Existing.js': '<Existing />',
+          'Existing.test.js': 'describe("<Existing />", () => {})',
+        },
+        './srv/existing-empty': {}
+      });
+    });
+    afterEach(() => {
+      mock.restore();
+    });
 
+    test('./src/new-component is missing & gets created', async () => {
+      const newPath = './src/new-component';
+      await createMissingPath(newPath);
+      // await mkdir(newPath, {recursive: true});
+      //expect.assertions(1);
+      await expect(access(newPath)).resolves.not.toThrow();
+      //await expect(access(newPath)).resolves.toBeTruthy();
+      //await expect(access(newPath)).rejects.toBeFalsy();
+    });
   });
 });

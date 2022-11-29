@@ -1,6 +1,5 @@
 //import chalk from 'chalk';
-//import { readdir } from 'fs/promises';
-import fs from 'fs/promises';
+import {access, readdir, mkdir} from 'fs/promises';
 
 export default function create(src, tgt) {
 
@@ -13,7 +12,7 @@ export function splitPath(fullPath) {
 
 export async function getMatchingFiles(path, baseName) {
   try {
-    const allFiles = await fs.readdir(path);
+    const allFiles = await readdir(path);
     const files = allFiles.filter(f => (f.match(baseName)));
     if(files.length < allFiles.length) {
       //console.warn(chalk.yellow('[Warning] Rejected files: ', allFiles.filter(f => (!f.match(baseName)))));
@@ -28,6 +27,10 @@ export async function getMatchingFiles(path, baseName) {
   return [];
 }
 
-export function createPath(path) {
-
+export async function createMissingPath(path) {
+  try {
+    await access(path);
+  } catch(err) {
+    await mkdir(path, {recursive: true});
+  }
 }
