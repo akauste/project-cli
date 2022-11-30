@@ -1,3 +1,5 @@
+![tests](https://github.com/akauste/project-cli/actions/workflows/test.yml/badge.svg)
+
 # project-cli
 
 This is a small tool to create component files based on existing component.
