@@ -1,8 +1,8 @@
 {
   "name": "project-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Manage js project from commandline",
-  "main": "index.js",
+  "main": "project.js",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
@@ -18,6 +18,6 @@
     "mock-fs": "^5.2.0"
   },
   "bin": {
-    "project": "index.js"
+    "project": "project.js"
   }
 }
