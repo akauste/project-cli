@@ -6,11 +6,15 @@ This is a small tool to create component files based on existing component.
 
 ## installation
 
+```
 npm install -g https://github.com/akauste/project-cli
+```
 
 ## Example usage
 
-  project create ./src/components/original-component/Original ./src/components/target-component/Target
+```
+project create ./src/components/original-component/Original ./src/components/target-component/Target
+```
 
 This will copy all files from ./src/components/original-component directory that match the name **Original\** (Example: Original.js, Original.test.js, Original.mocks.js, etc.) If the folder has other files that do not match (ie. README), then those are not copied.
 
