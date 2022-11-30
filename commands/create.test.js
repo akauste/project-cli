@@ -6,6 +6,13 @@ import {access, mkdir, readFile} from 'fs/promises';
 describe('create', () => {
   beforeEach(() => {
     mock({
+      './src/template2': {
+        'Example2.js': 'export default function Example2() { return <p>Example2</p> }',
+        'Example2.test.js': 'describe("<Example2 />", () => {})',
+      },
+      './src/template2/Example2': {
+        'Example2.txt': 'This is in subfolder'
+      },
       './src/template-component': {
         'ExampleComponent.js': 'export default function ExampleComponent() { return <p>ExampleComponent</p> }',
         'ExampleComponent.test.js': 'describe("<ExampleComponent />", () => {})',
@@ -91,6 +98,14 @@ describe('create', () => {
       expect(widgetData.toString()).toBe('// Do not touch'); // Should be the old data
       const widgetTestData = await readFile('./src/half-existing-component/HalfExisting.test.js');
       expect(widgetTestData.toString()).toBe('describe("<HalfExisting />", () => {})');
+    });
+
+    test('create ./src/template2/Example2 ./src/sub-dir-test/NoSubDir', async () => {
+      await create('./src/template2/Example2', './src/sub-dir-test/NoSubDir');
+      expect(access('./src/sub-dir-test')).resolves.not.toThrow();
+      expect(access('./src/sub-dir-test/NoSubDir.js')).resolves.not.toThrow();
+      expect(access('./src/sub-dir-test/NoSubDir.test.js')).resolves.not.toThrow();
+      expect(access('./src/sub-dir-test/NoSubDir')).rejects.toThrow();
     });
   });
 });

@@ -31,8 +31,10 @@ export function splitPath(fullPath) {
 
 export async function getMatchingFiles(path, baseName) {
   try {
-    const allFiles = await readdir(path);
-    const files = allFiles.filter(f => (f.match(baseName)));
+    const allFiles = await readdir(path, {withFileTypes: true });
+    const files = allFiles
+      .filter(dirent => (dirent.isFile() && dirent.name.match(baseName)))
+      .map(dirent => (dirent.name));
     if(files.length < allFiles.length) {
       //console.warn(chalk.yellow('[Warning] Rejected files: ', allFiles.filter(f => (!f.match(baseName)))));
     }
