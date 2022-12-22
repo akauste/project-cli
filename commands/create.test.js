@@ -51,6 +51,12 @@ describe('create', () => {
       expect(path).toBe('./some/other');
       expect(baseName).toBe('Component');
     });
+
+    test('windows path', () => {
+      const [path, baseName] = splitPath('my\\sub\\folder\\Example.html');
+      expect(path).toBe('my\\sub\\folder');
+      expect(baseName).toBe('Example');
+    });
   });
 
   describe('getMatchingFiles(dir, baseName)', () => {
@@ -106,14 +112,6 @@ describe('create', () => {
       expect(access('./src/sub-dir-test/NoSubDir.js')).resolves.not.toThrow();
       expect(access('./src/sub-dir-test/NoSubDir.test.js')).resolves.not.toThrow();
       expect(access('./src/sub-dir-test/NoSubDir')).rejects.toThrow();
-    });
-
-    test('create src\\template2\\Example2 src\\sub-dir-test\\NoSubDir2', async () => {
-      await create('create src\\template2\\Example2', 'src\\sub-dir-test\\NoSubDir2');
-      expect(access('./src/sub-dir-test')).resolves.not.toThrow();
-      expect(access('./src/sub-dir-test/NoSubDir2.js')).resolves.not.toThrow();
-      expect(access('./src/sub-dir-test/NoSubDir2.test.js')).resolves.not.toThrow();
-      expect(access('./src/sub-dir-test/NoSubDir2')).rejects.toThrow();
     });
   });
 });
